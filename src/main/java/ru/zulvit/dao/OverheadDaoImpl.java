@@ -25,11 +25,7 @@ public final class OverheadDaoImpl implements DAO<Overhead> {
                         resultSet.getInt("organization_id")
                 );
             }
-            if (overhead != null) {
-                return Optional.of(overhead);
-            } else {
-                return Optional.empty();
-            }
+            return Optional.ofNullable(overhead);
         } catch (SQLException e) {
             throw new RuntimeException();
         }
@@ -77,15 +73,10 @@ public final class OverheadDaoImpl implements DAO<Overhead> {
             try (Statement statement = connection.createStatement()) {
                 connection.setAutoCommit(false);
                 var prepareStatement = connection.prepareStatement(
-                        "UPDATE Overhead SET date = ? where \"ID\" = ?");
+                        "UPDATE Overhead SET (date, organization_id) = (?, ?) where \"ID\" = ?");
                 prepareStatement.setString(1, entity.date());
-                prepareStatement.setInt(2, entity.id());
-                statement.executeUpdate(prepareStatement.toString());
-
-                prepareStatement = connection.prepareStatement(
-                        "UPDATE Overhead SET organization_id = ? where \"ID\" = ?");
-                prepareStatement.setInt(1, entity.organizationId());
-                prepareStatement.setInt(2, entity.id());
+                prepareStatement.setInt(2, entity.organizationId());
+                prepareStatement.setInt(3, entity.id());
                 statement.executeUpdate(prepareStatement.toString());
                 connection.commit();
             } catch (SQLException e) {

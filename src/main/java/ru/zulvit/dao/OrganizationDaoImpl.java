@@ -25,11 +25,7 @@ public final class OrganizationDaoImpl implements DAO<Organization> {
                         resultSet.getInt("checking_account")
                 );
             }
-            if (organization != null) {
-                return Optional.of(organization);
-            } else {
-                return Optional.empty();
-            }
+            return Optional.ofNullable(organization);
         } catch (SQLException e) {
             throw new RuntimeException();
         }
@@ -77,15 +73,10 @@ public final class OrganizationDaoImpl implements DAO<Organization> {
             try (Statement statement = connection.createStatement()) {
                 connection.setAutoCommit(false);
                 var prepareStatement = connection.prepareStatement(
-                        "UPDATE Organizations SET name = ? where \"INN\" = ?");
+                        "UPDATE Organizations SET (name, checking_account) = (?, ?) where \"INN\" = ?");
                 prepareStatement.setString(1, entity.name());
-                prepareStatement.setInt(2, entity.inn());
-                statement.executeUpdate(prepareStatement.toString());
-
-                prepareStatement = connection.prepareStatement(
-                        "UPDATE Organizations SET checking_account = ? where \"INN\" = ?");
-                prepareStatement.setInt(1, entity.checking_account());
-                prepareStatement.setInt(2, entity.inn());
+                prepareStatement.setInt(2, entity.checking_account());
+                prepareStatement.setInt(3, entity.inn());
                 statement.executeUpdate(prepareStatement.toString());
                 connection.commit();
             } catch (SQLException e) {

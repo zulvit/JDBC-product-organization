@@ -25,7 +25,6 @@ class OrganizationDaoImplTest {
         organizationDao.save(organization);
         Optional<Organization> byId = organizationDao.findById(Integer.MAX_VALUE);
         byId.ifPresent(value -> assertEquals(organization, value));
-        organizationDao.delete(organization);
     }
 
     @Test
@@ -40,7 +39,6 @@ class OrganizationDaoImplTest {
                 break;
             }
         }
-        organizationDao.delete(organization);
         assertTrue(flag);
     }
 
@@ -51,7 +49,6 @@ class OrganizationDaoImplTest {
         if (organizationDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(organizationDao.findById(Integer.MAX_VALUE).get(), organization);
         }
-        organizationDao.delete(organization);
     }
 
     @Test
@@ -74,7 +71,5 @@ class OrganizationDaoImplTest {
         if (organizationDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(organizationDao.findById(Integer.MAX_VALUE).get(), organization);
         }
-        organizationDao.delete(organization);
-        organizationDao.delete(organization1);
     }
 }

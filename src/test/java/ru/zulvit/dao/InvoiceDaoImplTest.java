@@ -25,7 +25,6 @@ class InvoiceDaoImplTest {
         invoiceDao.save(invoice);
         Optional<Invoice> byId = invoiceDao.findById(Integer.MAX_VALUE);
         byId.ifPresent(value -> assertEquals(invoice, value));
-        invoiceDao.delete(invoice);
     }
 
     @Test
@@ -40,7 +39,6 @@ class InvoiceDaoImplTest {
                 break;
             }
         }
-        invoiceDao.delete(invoice);
         assertTrue(flag);
     }
 
@@ -51,7 +49,6 @@ class InvoiceDaoImplTest {
         if (invoiceDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(invoiceDao.findById(Integer.MAX_VALUE).get(), invoice);
         }
-        invoiceDao.delete(invoice);
     }
 
     @Test
@@ -74,7 +71,5 @@ class InvoiceDaoImplTest {
         if (invoiceDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(invoiceDao.findById(Integer.MAX_VALUE).get(), invoice);
         }
-        invoiceDao.delete(invoice);
-        invoiceDao.delete(invoice1);
     }
 }

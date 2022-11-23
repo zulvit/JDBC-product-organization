@@ -17,7 +17,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.24")
 
-    implementation("org.flywaydb:flyway-core:9.8.1")
+    implementation("org.flywaydb:flyway-core:9.8.2")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation("org.jetbrains:annotations:23.0.0")
 }
