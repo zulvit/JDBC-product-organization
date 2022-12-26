@@ -25,7 +25,6 @@ class OverheadDaoImplTest {
         overheadDao.save(overhead);
         Optional<Overhead> byId = overheadDao.findById(Integer.MAX_VALUE);
         byId.ifPresent(value -> assertEquals(overhead, value));
-        overheadDao.delete(overhead);
     }
 
     @Test
@@ -40,7 +39,6 @@ class OverheadDaoImplTest {
                 break;
             }
         }
-        overheadDao.delete(overhead);
         assertTrue(flag);
     }
 
@@ -51,7 +49,6 @@ class OverheadDaoImplTest {
         if (overheadDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(overheadDao.findById(Integer.MAX_VALUE).get(), overhead);
         }
-        overheadDao.delete(overhead);
     }
 
     @Test
@@ -74,7 +71,5 @@ class OverheadDaoImplTest {
         if (overheadDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(overheadDao.findById(Integer.MAX_VALUE).get(), overhead);
         }
-        overheadDao.delete(overhead);
-        overheadDao.delete(overhead1);
     }
 }

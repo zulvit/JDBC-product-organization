@@ -24,11 +24,7 @@ public final class ProductDaoImpl implements DAO<Product> {
                         resultSet.getString("title")
                 );
             }
-            if (product != null) {
-                return Optional.of(product);
-            } else {
-                return Optional.empty();
-            }
+            return Optional.ofNullable(product);
         } catch (SQLException e) {
             throw new RuntimeException();
         }

@@ -27,11 +27,7 @@ public final class InvoiceDaoImpl implements DAO<Invoice> {
                         resultSet.getInt("amount")
                 );
             }
-            if (invoice != null) {
-                return Optional.of(invoice);
-            } else {
-                return Optional.empty();
-            }
+            return Optional.ofNullable(invoice);
         } catch (SQLException e) {
             throw new RuntimeException();
         }
@@ -89,27 +85,12 @@ public final class InvoiceDaoImpl implements DAO<Invoice> {
             try (Statement statement = connection.createStatement()) {
                 connection.setAutoCommit(false);
                 var prepareStatement = connection.prepareStatement(
-                        "UPDATE Invoice SET overhead_id = ? where \"ID\" = ?");
+                        "UPDATE Invoice SET (overhead_id, product_id, price, amount) = (?, ?, ?, ?) where \"ID\" = ?");
                 prepareStatement.setInt(1, entity.overheadId());
-                prepareStatement.setInt(2, entity.ID());
-                statement.executeUpdate(prepareStatement.toString());
-
-                prepareStatement = connection.prepareStatement(
-                        "UPDATE Invoice SET product_id = ? where \"ID\" = ?");
-                prepareStatement.setInt(1, entity.productId());
-                prepareStatement.setInt(2, entity.ID());
-                statement.executeUpdate(prepareStatement.toString());
-
-                prepareStatement = connection.prepareStatement(
-                        "UPDATE Invoice SET price = ? where \"ID\" = ?");
-                prepareStatement.setDouble(1, entity.price());
-                prepareStatement.setInt(2, entity.ID());
-                statement.executeUpdate(prepareStatement.toString());
-
-                prepareStatement = connection.prepareStatement(
-                        "UPDATE Invoice SET amount = ? where \"ID\" = ?");
-                prepareStatement.setInt(1, entity.amount());
-                prepareStatement.setInt(2, entity.ID());
+                prepareStatement.setInt(2, entity.productId());
+                prepareStatement.setDouble(3, entity.price());
+                prepareStatement.setInt(4, entity.amount());
+                prepareStatement.setInt(5, entity.ID());
                 statement.executeUpdate(prepareStatement.toString());
                 connection.commit();
             } catch (SQLException e) {

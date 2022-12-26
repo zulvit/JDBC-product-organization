@@ -5,6 +5,7 @@ import ru.zulvit.dao.InvoiceDaoImpl;
 import ru.zulvit.dao.OrganizationDaoImpl;
 import ru.zulvit.dao.OverheadDaoImpl;
 import ru.zulvit.dao.ProductDaoImpl;
+import ru.zulvit.entity.Invoice;
 import ru.zulvit.flyway.FlywayInitializer;
 import ru.zulvit.reports.PersonalizedReports;
 

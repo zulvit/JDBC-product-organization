@@ -11,10 +11,10 @@ import java.util.stream.Stream;
 public class PersonalizedReports {
     private final JDBCCredentials CREDS = JDBCCredentials.DEFAULT;
 
-    private record CustomSupplier(int amount, @NotNull List<Integer> listProductsId) {
+    record CustomSupplier(int amount, @NotNull List<Integer> listProductsId) {
     }
 
-    private record AveragePrice(double price, int amount) {
+    record AveragePrice(double price, int amount) {
     }
 
     private record ListForThePeriod(int amount, @NotNull List<Integer> listProductsId) {
@@ -28,18 +28,20 @@ public class PersonalizedReports {
     public Map<Integer, Integer> topNByDelivered(int n) {
         try (Connection connection = DriverManager.getConnection(CREDS.url(), CREDS.login(), CREDS.password())) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT overhead.organization_id, invoice.amount " +
-                    "FROM overhead JOIN invoice ON overhead.\"ID\" = invoice.\"ID\"");
-            TreeMap<Integer, Integer> map = new TreeMap<>();
+            ResultSet resultSet = statement.executeQuery("SELECT DISTINCT overhead.organization_id, sum(invoice.amount) " +
+                    "OVER(PARTITION BY overhead.organization_id) AS total_sum " +
+                    "FROM overhead JOIN invoice ON overhead.\"ID\" = invoice.\"ID\" " +
+                    "ORDER BY total_sum " +
+                    "DESC LIMIT " + n);
+            Map<Integer, Integer> map = new LinkedHashMap<>();
 
             while (resultSet.next()) {
-                Integer key = resultSet.getInt("organization_id");
-                Integer value = resultSet.getInt("amount");
-                map.merge(key, value, Integer::sum);
+                Integer organizationId = resultSet.getInt("organization_id");
+                Integer totalSum = resultSet.getInt("total_sum");
+                map.put(organizationId, totalSum);
             }
 
             return map.entrySet().stream()
-                    .limit(n)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -74,13 +76,15 @@ public class PersonalizedReports {
                     map.put(orgId, new CustomSupplier(amount, listOfProducts));
                 }
             }
-            for (int i = 0; i < map.size(); i++) {
-                if (map.get(keysArray.get(i)).amount < n) {
-                    map.remove(keysArray.get(i));
+            Map<Integer, CustomSupplier> resultMap = new TreeMap<>();
+            for (int i = 0; i < map.keySet().size(); i++) {
+                int amount = map.get(map.keySet().toArray()[i]).amount; // amount
+                int id = (int) map.keySet().toArray()[i];
+                if (amount > n) {
+                    resultMap.put(id, map.get(map.keySet().toArray()[i]));
                 }
             }
-            return map.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return resultMap;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -126,8 +130,6 @@ public class PersonalizedReports {
      * @return средняя цена по каждому товару за период
      */
     public Map<Integer, Double> calcAveragePriceOfThePeriod(@NotNull Calendar start, @NotNull Calendar end) {
-        //map - цены на продукты и количество
-        //average map - мапа продуктов и средних цен на них
         try (Connection connection = DriverManager.getConnection(CREDS.url(), CREDS.login(), CREDS.password())) {
             Statement statement = connection.createStatement();
             PreparedStatement preparedStatement = connection.prepareStatement("SELECT invoice.product_id, invoice.price, invoice.amount " +

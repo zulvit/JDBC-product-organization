@@ -25,7 +25,6 @@ class ProductDaoImplTest {
         productDao.save(product);
         Optional<Product> byId = productDao.findById(Integer.MAX_VALUE);
         byId.ifPresent(value -> assertEquals(product, value));
-        productDao.delete(product);
     }
 
     @Test
@@ -40,7 +39,6 @@ class ProductDaoImplTest {
                 break;
             }
         }
-        productDao.delete(product);
         assertTrue(flag);
     }
 
@@ -51,7 +49,6 @@ class ProductDaoImplTest {
         if (productDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(productDao.findById(Integer.MAX_VALUE).get(), product);
         }
-        productDao.delete(product);
     }
 
     @Test
@@ -74,7 +71,5 @@ class ProductDaoImplTest {
         if (productDao.findById(Integer.MAX_VALUE).isPresent()) {
             assertEquals(productDao.findById(Integer.MAX_VALUE).get(), product);
         }
-        productDao.delete(product);
-        productDao.delete(product1);
     }
 }
